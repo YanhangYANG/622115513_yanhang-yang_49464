@@ -1,5 +1,7 @@
 
 
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:myapp2/pages/details.dart';
 
@@ -19,24 +21,16 @@ class _HomepageState extends State<Homepage> {
       ),
       body: Padding(
         padding: const EdgeInsets.all(20),
-        child: ListView(
-        children: [
-          MyBox("What are dinosaurs?",
-          "A group of sauropods mainly living in the Mesozoic",
-          "https://img1.baidu.com/it/u=1786928153,3097094659&fm=26&fmt=auto"),
-          SizedBox(height: 20,)
-          ,
-          
-          MyBox("What is human?",
-          "The only living species of the genus Hominidae in biological classification",
-          "https://img2.baidu.com/it/u=1908759568,1991906679&fm=26&fmt=auto"),
-          SizedBox(height: 20,),
-          MyBox("What is a robot?",
-          "A machine device that performs work automatically",
-          "https://img0.baidu.com/it/u=1003661357,1150682269&fm=26&fmt=auto"),
-          SizedBox(height: 20,),
-        ],
-        ),
+        child: FutureBuilder(
+          builder: (context,snapshot){
+          var data = json.decode(snapshot.data.toString());
+          return ListView.builder(itemBuilder: (BuildContext context, int index){
+            return MyBox(data[index]['title'], data[index]['subtitle'], data[index]['img_url']);
+          },
+          itemCount: data.length,);
+        },
+        future: DefaultAssetBundle.of(context).loadString('assets/data.json'),
+    )
         ),
     );
     
@@ -45,6 +39,7 @@ class _HomepageState extends State<Homepage> {
 
 Widget MyBox(String title, String subtitle,String img_url,){
       return Container(
+        margin: EdgeInsets.only(top: 20),
         padding: EdgeInsets.all(20),
         height: 150,
         decoration: BoxDecoration(
